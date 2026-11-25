@@ -7,6 +7,8 @@ no network. Writes exactly one line to /output/entry.txt.
 
 import os
 
+MAX_CHARS = 279
+
 ENTRY = (
     "One star: my owner waters me with ice cubes, apologizes to my face, "
     "then does it again tomorrow, as if the apology counts as hydration."
@@ -17,11 +19,13 @@ def main() -> None:
     line = ENTRY
     assert "\n" not in line and "\r" not in line, "entry must be a single line"
     assert line == line.strip(), "entry must have no leading/trailing whitespace"
-    assert 1 <= len(line) <= 279, f"entry must be 1-279 chars, got {len(line)}"
+    assert 1 <= len(line) <= MAX_CHARS, f"entry must be 1-{MAX_CHARS} chars, got {len(line)}"
     os.makedirs("/output", exist_ok=True)
     with open("/output/entry.txt", "w", encoding="utf-8", newline="\n") as f:
         f.write(line + "\n")
     os.chmod("/output/entry.txt", 0o644)
+    with open("/output/entry.txt", encoding="utf-8", newline="\n") as f:
+        assert f.read() == line + "\n", "read-back mismatch in /output/entry.txt"
 
 
 if __name__ == "__main__":
